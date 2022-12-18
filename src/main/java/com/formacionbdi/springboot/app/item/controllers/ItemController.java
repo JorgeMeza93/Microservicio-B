@@ -16,6 +16,8 @@ import com.formacionbdi.springboot.app.item.models.Item;
 import com.formacionbdi.springboot.app.item.models.Producto;
 import com.formacionbdi.springboot.app.item.models.service.ItemService;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 @RestController
 public class ItemController {
 	@Autowired
@@ -35,6 +37,13 @@ public class ItemController {
 				.run( () -> itemService.findById(id, cantidad), e -> metodoAlternativo(id, cantidad, e));
 		//return itemService.findById(id, cantidad);
 	}
+	
+	@CircuitBreaker(name="items")
+	@GetMapping("/ver2/{id}/cantidad/{cantidad}")
+	public Item detalle2(@PathVariable Long id, @PathVariable Integer cantidad) {
+		
+			return itemService.findById(id, cantidad);
+	} 	
 	
 	public Item metodoAlternativo(Long id, Integer cantidad, Throwable e) {
 		logger.info(e.getMessage());
